@@ -9,8 +9,13 @@ Next ideas:
 * add mutation mechanisms
 * add neuronal network
 * mix quines
+* absorb code
 
 
 ## 01 Simple quine
 
 This directory contains a simple quine, that will display it contents.
+
+## 02 Cleaner quine
+
+Tried to have several chunks of hex encoded code, instead of one big string.
