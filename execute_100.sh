@@ -16,8 +16,6 @@ do
   python3 $script_name > $new_file_name
   exit_code=$?
 
-  cat $new_file_name | egrep "#\w|#  " && echo "comment at ${i}"
-
   if [ $exit_code -ne 0 ]; then
     echo "Breaking (not executable) at ${i}th iteration"
     exit 1
