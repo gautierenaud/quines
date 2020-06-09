@@ -3,7 +3,7 @@ import random
 import subprocess
 import tempfile
 from quine_logger import log
-
+from collections import deque
 
 class Quine:
     def __init__(self, code: str, livable: bool, parent=None):
@@ -22,11 +22,13 @@ def hash_quine(quine_content: str):
     return hash_object.hexdigest()
 
 
-def quine_generator(quine_dict, semaphore):
+def quine_generator(quine_dict: dict, semaphore):
     tmp_file_name = tempfile.NamedTemporaryFile(delete=False)
+    living_quine_hash = deque(maxlen=20)
+    living_quine_hash.append(list(quine_dict.values())[0].hash)
     while not semaphore.locked():
         # select quine
-        quine_hash = random.choice(list(quine_dict))
+        quine_hash = random.choice(list(living_quine_hash))
         parent_quine = quine_dict[quine_hash]
 
         with open(tmp_file_name.name, 'w') as file:
@@ -36,7 +38,11 @@ def quine_generator(quine_dict, semaphore):
                                           stderr=subprocess.DEVNULL, text=True)
         new_quine_code = tmp_quine_result.stdout
 
-        yield parent_quine, Quine(new_quine_code, tmp_quine_result.returncode == 0, parent_quine.hash)
+        new_quine = Quine(new_quine_code, tmp_quine_result.returncode == 0, parent_quine.hash)
+
+        if new_quine.livable and new_quine.hash not in living_quine_hash:
+            living_quine_hash.append(new_quine.hash)
+        yield parent_quine, new_quine
 
 
 def random_selection(quine_info, quine_file, semaphore):

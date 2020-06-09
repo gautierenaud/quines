@@ -57,8 +57,6 @@ class QuineDashboard:
         app.run_server(debug=True)
 
     def update_graph(self, _n_intervals):
-        print("Dasboard", len(self.quine_info.quine_dict), self.quine_info.root_hash)
-
         node_xs, node_ys, node_labels, node_colors, edge_xs, edge_ys = self.get_nodes()
 
         fig = go.Figure()
@@ -99,13 +97,10 @@ class QuineDashboard:
         edge_xs = []
         edge_ys = []
 
-        print("Get coordinates")
-
         next_nodes = deque()
         next_nodes.append(quine_tree)
         while next_nodes:
             current_node = next_nodes.pop()
-            print(f"x: {current_node.x}, y: {current_node.y}, {current_node.tree}")
             node_xs.append(current_node.x)
             node_ys.append(current_node.y)
             node_labels.append(current_node.tree.hash)
