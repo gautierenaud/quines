@@ -1,23 +1,43 @@
-from random import random
+from collections import deque
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
-
-from collections import namedtuple, deque
-
-TmpTree = namedtuple('TmpTree', 'x y children')
+from draw_tree import buchheim
 
 RED = '#ff0000'
 GREEN = '#00ff00'
 
 
-class QuineTreeDash:
-    def __init__(self, tree):
-        self.quine_tree = tree
+class Tree:
+    def __init__(self, hash, parent, livable):
+        self.hash = hash
+        self.parent = parent
+        self.livable = livable
+        self.children = []
+
+    def __repr__(self):
+        return self.hash
+
+
+def create_tree(hash, quine_dict):
+    node = Tree(hash, None, quine_dict[hash].livable)
+    for child_hash in quine_dict[hash].children:
+        node.children.append(create_tree(child_hash, quine_dict))
+
+    return node
+
+
+def build_tree(quine_info):
+    raw_tree = create_tree(quine_info.root_hash, quine_info.quine_dict)
+    return buchheim(raw_tree)
+
+
+class QuineDashboard:
+    def __init__(self, quine_info):
+        self.quine_info = quine_info
 
         app = dash.Dash(__name__)
         app.layout = html.Div(
@@ -37,6 +57,8 @@ class QuineTreeDash:
         app.run_server(debug=True)
 
     def update_graph(self, _n_intervals):
+        print("Dasboard", len(self.quine_info.quine_dict), self.quine_info.root_hash)
+
         node_xs, node_ys, node_labels, node_colors, edge_xs, edge_ys = self.get_nodes()
 
         fig = go.Figure()
@@ -65,6 +87,8 @@ class QuineTreeDash:
         return fig
 
     def get_nodes(self):
+        quine_tree = build_tree(self.quine_info)
+
         # node coordinates
         node_xs = []
         node_ys = []
@@ -78,7 +102,7 @@ class QuineTreeDash:
         print("Get coordinates")
 
         next_nodes = deque()
-        next_nodes.append(self.quine_tree)
+        next_nodes.append(quine_tree)
         while next_nodes:
             current_node = next_nodes.pop()
             print(f"x: {current_node.x}, y: {current_node.y}, {current_node.tree}")
@@ -93,7 +117,3 @@ class QuineTreeDash:
                 edge_ys += [current_node.y, child_node.y, None]
 
         return node_xs, node_ys, node_labels, node_colors, edge_xs, edge_ys
-
-
-if __name__ == '__main__':
-    tralala = QuineTreeDash()
