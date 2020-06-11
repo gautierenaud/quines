@@ -5,6 +5,7 @@ import tempfile
 from quine_logger import log
 from collections import deque
 
+
 class Quine:
     def __init__(self, code: str, livable: bool, parent=None):
         self.code = code
@@ -51,10 +52,8 @@ def random_selection(quine_info, quine_file, semaphore):
         data = file.read()
     quine = Quine(data, True)
 
-    print(quine_info)
     quine_info.root_hash = quine.hash
     quine_info.quine_dict[quine.hash] = quine
-    print(quine_info)
 
     for parent_quine, child_quine in quine_generator(quine_info.quine_dict, semaphore):
         if child_quine.hash not in quine_info.quine_dict:
