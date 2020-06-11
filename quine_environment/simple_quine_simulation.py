@@ -25,7 +25,7 @@ def hash_quine(quine_content: str):
 
 def quine_generator(quine_dict: dict, semaphore):
     tmp_file_name = tempfile.NamedTemporaryFile(delete=False)
-    living_quine_hash = deque(maxlen=20)
+    living_quine_hash = deque(maxlen=100)
     living_quine_hash.append(list(quine_dict.values())[0].hash)
     while not semaphore.locked():
         # select quine

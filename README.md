@@ -10,6 +10,7 @@ Next ideas:
 * add neuronal network
 * mix quines
 * absorb code
+* for debug env, add more states to quine : unknown, alive and dead (maybe too old too ?)
 
 
 ## 01 Simple quine
